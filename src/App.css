@@ -1,0 +1,7 @@
+/* Local App Style Overrides */
+.content-wrapper {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
