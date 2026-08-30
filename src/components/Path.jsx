@@ -115,7 +115,7 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
         if (topic.includes("sql") || topic.includes("database")) {
             targetUrl = "https://www.youtube.com/watch?v=HXV3zeQKqGY"; // SQL Tutorial for Beginners
         } else if (topic.includes("networking") || topic.includes("tcp")) {
-            targetUrl = "https://www.youtube.com/watch?v=S7MNX_UD7QI"; // NetworkChuck CCNA
+            targetUrl = "https://www.youtube.com/watch?v=IPvYzhmi-zU"; // freeCodeCamp Networking Course
         } else if (topic.includes("java") && !topic.includes("javascript")) {
             targetUrl = "https://www.youtube.com/watch?v=A74TOX803X0"; // FreeCodeCamp Java Course
         } else if (topic.includes("oop") || topic.includes("object oriented")) {
