@@ -6,8 +6,9 @@ import Path from './components/Path';
 import Workspace from './components/Workspace';
 import LearningHub from './components/LearningHub';
 import CareerOverview from './components/CareerOverview';
+import Chatbot from './components/Chatbot';
 import Footer from './components/Footer';
-import { PathPilotHero, PathPilotAbout } from './components/PathPilotSections';
+import { PathPilotHero, PathPilotAbout, PathPilotNavbar, PathPilotAboutPage } from './components/PathPilotSections';
 import { api } from './api';
 import './App.css';
 
@@ -16,6 +17,7 @@ export default function App() {
     const [roadmap, setRoadmap] = useState([]);
     const [activeModuleId, setActiveModuleId] = useState(null);
     const [appLoading, setAppLoading] = useState(true);
+    const [landingView, setLandingView] = useState("home"); // "home" or "about"
 
     // Tab state in the app dashboard
     const [activeTab, setActiveTab] = useState("dashboard"); // "dashboard", "profile", "path", "hub", "career"
@@ -88,24 +90,41 @@ export default function App() {
         return (
             <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC', display: 'flex', flexDirection: 'column' }}>
                 
-                {/* Section 1 — PathPilot Hero */}
-                <PathPilotHero onGetStarted={() => {
-                    const targetSec = document.getElementById('pathpilot-app-section');
-                    if (targetSec) targetSec.scrollIntoView({ behavior: 'smooth' });
-                }} />
+                {/* Navbar (Common to both landing views) */}
+                <PathPilotNavbar 
+                    landingView={landingView} 
+                    setLandingView={setLandingView} 
+                    onPathPilotClick={() => {
+                        setLandingView("home");
+                        setTimeout(() => {
+                            const targetSec = document.getElementById('pathpilot-app-section');
+                            if (targetSec) targetSec.scrollIntoView({ behavior: 'smooth' });
+                        }, 80);
+                    }}
+                />
 
-                {/* Section 2 — PathPilot About */}
-                <PathPilotAbout />
+                {landingView === "home" ? (
+                    <>
+                        {/* Section 1 — PathPilot Hero */}
+                        <PathPilotHero onGetStarted={() => {
+                            const targetSec = document.getElementById('pathpilot-app-section');
+                            if (targetSec) targetSec.scrollIntoView({ behavior: 'smooth' });
+                        }} />
 
-                {/* Section 3 — Stacked Onboarding gate */}
-                <div id="pathpilot-app-section" style={{ backgroundColor: 'var(--bg-app)', borderTop: '1px solid var(--border-color)', position: 'relative' }}>
-                    <div style={{ padding: '80px 0' }} className="container">
-                        <Onboarding 
-                            onOnboardSuccess={handleOnboardSuccess} 
-                            onLoadDemo={handleLoadDemo} 
-                        />
-                    </div>
-                </div>
+                        {/* Section 2 — Onboarding Section */}
+                        <div id="pathpilot-app-section" style={{ backgroundColor: 'var(--bg-app)', borderTop: '1px solid var(--border-color)', position: 'relative' }}>
+                            <div style={{ padding: '80px 0' }} className="container">
+                                <Onboarding 
+                                    onOnboardSuccess={handleOnboardSuccess} 
+                                    onLoadDemo={handleLoadDemo} 
+                                />
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    /* Section 2 — Dedicated About Page view */
+                    <PathPilotAboutPage onBackToDashboard={() => setLandingView("home")} />
+                )}
 
                 {/* Global Footer */}
                 <Footer />
@@ -274,6 +293,27 @@ export default function App() {
                             }}
                         >
                             <span style={{ fontSize: '18px' }}>📈</span> Career Overview
+                        </button>
+                        <button 
+                            onClick={() => { setActiveTab("chatbot"); setActiveModuleId(null); }}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                width: '100%',
+                                padding: '12px 16px',
+                                borderRadius: '10px',
+                                background: activeTab === "chatbot" ? '#EFF6FF' : 'transparent',
+                                border: activeTab === "chatbot" ? '1px solid rgba(37, 99, 235, 0.15)' : '1px solid transparent',
+                                color: activeTab === "chatbot" ? '#2563EB' : '#64748B',
+                                fontSize: '15px',
+                                fontWeight: activeTab === "chatbot" ? '600' : '500',
+                                textAlign: 'left',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            <span style={{ fontSize: '18px' }}>🤖</span> Chatbot
                         </button>
                     </nav>
                 </div>
@@ -478,6 +518,21 @@ export default function App() {
                             >
                                 📈 Career Overview
                             </button>
+                            <button 
+                                onClick={() => { setActiveTab("chatbot"); setActiveModuleId(null); setSidebarOpen(false); }}
+                                style={{
+                                    padding: '16px',
+                                    borderRadius: '10px',
+                                    background: activeTab === "chatbot" ? '#EFF6FF' : 'transparent',
+                                    border: '1px solid #E2E8F0',
+                                    color: activeTab === "chatbot" ? '#2563EB' : '#64748B',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    textAlign: 'left'
+                                }}
+                            >
+                                🤖 Chatbot
+                            </button>
                         </nav>
 
                         <button 
@@ -525,6 +580,7 @@ export default function App() {
                                 <Profile 
                                     profile={profile} 
                                     onUpdateProfileState={handleUpdateProfileState}
+                                    onNavigateToTab={(tab) => { setActiveTab(tab); }}
                                 />
                             )}
 
@@ -549,6 +605,14 @@ export default function App() {
 
                             {activeTab === "career" && (
                                 <CareerOverview 
+                                    profile={profile}
+                                    onUpdateProfileState={handleUpdateProfileState}
+                                    onNavigateToTab={(tab) => { setActiveTab(tab); }}
+                                />
+                            )}
+
+                            {activeTab === "chatbot" && (
+                                <Chatbot 
                                     profile={profile}
                                     onUpdateProfileState={handleUpdateProfileState}
                                     onNavigateToTab={(tab) => { setActiveTab(tab); }}

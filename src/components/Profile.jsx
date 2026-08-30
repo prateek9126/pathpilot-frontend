@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Shield, PenTool, CheckCircle, Save, Sliders, RefreshCw } from 'lucide-react';
 import { api } from '../api';
 
-export default function Profile({ profile, onUpdateProfileState }) {
+export default function Profile({ profile, onUpdateProfileState, onNavigateToTab }) {
     const [name, setName] = useState(profile.name);
     const [goal, setGoal] = useState(profile.targetGoal);
     const [level, setLevel] = useState(profile.currentLevel);
@@ -120,6 +120,9 @@ export default function Profile({ profile, onUpdateProfileState }) {
             const updatedRoadmap = await api.getRoadmap();
             onUpdateProfileState(updatedProfile, updatedRoadmap);
             setSuccessMessage("Profile saved successfully. Your learning roadmap has been adapted and recalculated!");
+            if (onNavigateToTab) {
+                onNavigateToTab('path');
+            }
         } catch (err) {
             setSuccessMessage("Failed to save profile. Check if the backend server is running.");
         } finally {

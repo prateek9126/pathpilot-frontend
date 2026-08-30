@@ -112,15 +112,28 @@ export default function Resources({ profile, roadmap, onNavigateToModule }) {
         alert(`Successfully added resource to your active '${topic}' roadmap milestone! The AI Mentor will prioritize this material in your next study recommendation.`);
     };
 
+    // Filtered resources based on budget preset exclusivity:
+    let filteredResources = resources;
+    if (budgetPreset === "0") {
+        // Free selected: show ONLY free resources (isFree === true or free === true or price === 0)
+        filteredResources = resources.filter(r => r.isFree || r.free || r.price === 0);
+    } else if (budgetPreset === "500" || budgetPreset === "2000" || budgetPreset === "premium") {
+        // Paid selected: show ONLY paid resources that are within the budget
+        filteredResources = resources.filter(r => !(r.isFree || r.free || r.price === 0) && r.price <= maxBudget);
+    } else {
+        // Custom: apply budget limit
+        filteredResources = resources.filter(r => r.price <= maxBudget);
+    }
+
     // Split resources into Sections
     // 1. Recommended (Top relevance, limit 3)
-    const recommendedForYou = resources.slice(0, 3);
+    const recommendedForYou = filteredResources.slice(0, 3);
     
     // 2. Free Resources
-    const freeResources = resources.filter(r => r.isFree);
+    const freeResources = filteredResources.filter(r => r.isFree || r.free || r.price === 0);
 
     // 3. Paid Resources (Price > 0 and <= maxBudget)
-    const paidResources = resources.filter(r => !r.isFree && r.price <= maxBudget);
+    const paidResources = filteredResources.filter(r => !(r.isFree || r.free || r.price === 0));
 
     // Resource types filter list
     const resourceTypes = [
@@ -249,7 +262,8 @@ export default function Resources({ profile, roadmap, onNavigateToModule }) {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search keywords, instructors, platforms..."
-                            style={{ width: '100%', padding: '10px 12px 10px 36px', fontSize: '13px', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                            className="search-input-with-icon"
+                            style={{ width: '100%', fontSize: '13px', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
                         />
                     </div>
                     <div>
@@ -395,12 +409,47 @@ function ResourceCard({ res, added, onAdd, getDifficultyColor, showWhy = false }
         <div className="card-premium" style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between', padding: '0', overflow: 'hidden' }}>
             
             {/* Card Top Thumb */}
-            <div>
+            <div style={{ position: 'relative' }}>
+                {/* Platform Badge */}
+                <div style={{ 
+                    position: 'absolute', 
+                    top: '8px', 
+                    left: '8px', 
+                    zIndex: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '28px', 
+                    height: '28px', 
+                    borderRadius: '50%', 
+                    backgroundColor: res.platform.toLowerCase().includes('youtube') ? '#ef4444' : 
+                                     res.platform.toLowerCase().includes('udemy') ? '#a855f7' : 
+                                     res.platform.toLowerCase().includes('coursera') ? '#3b82f6' : 'rgba(31, 41, 55, 0.95)', 
+                    color: '#ffffff',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255,255,255,0.15)'
+                }} title={res.platform}>
+                    {res.platform.toLowerCase().includes('youtube') ? (
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff">
+                            <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.516 0-9.387.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.387.508 9.387.508s7.517 0 9.387-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                    ) : res.platform.toLowerCase().includes('udemy') ? (
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="#ffffff">
+                            <path d="M12 3L6.5 8.5L8.5 10.5L12 7L15.5 10.5L17.5 8.5L12 3Z"/>
+                            <path d="M6.5 12V16.5C6.5 19.5 9 22 12 22C15 22 17.5 19.5 17.5 16.5V12H14.5V16.5C14.5 17.9 13.4 19 12 19C10.6 19 9.5 17.9 9.5 16.5V12H6.5Z"/>
+                        </svg>
+                    ) : res.platform.toLowerCase().includes('coursera') ? (
+                        <span style={{ fontSize: '11px', fontWeight: '900', fontFamily: 'Outfit' }}>C</span>
+                    ) : (
+                        <span style={{ fontSize: '8px', fontWeight: '800' }}>{res.platform.charAt(0).toUpperCase()}</span>
+                    )}
+                </div>
+
                 {hasThumb ? (
                     <img 
                         src={res.thumbnail} 
                         alt={res.title} 
-                        style={{ width: '100%', height: '140px', objectFit: 'cover', borderBottom: '1px solid var(--border-color)' }}
+                        style={{ width: '100%', height: '140px', objectFit: 'cover', borderBottom: '1px solid var(--border-color)', display: 'block' }}
                     />
                 ) : (
                     <div style={{ width: '100%', height: '130px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(59, 130, 246, 0.05))', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--primary)' }}>
@@ -410,19 +459,21 @@ function ResourceCard({ res, added, onAdd, getDifficultyColor, showWhy = false }
                             <Compass size={32} />
                         )}
                         <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase' }}>
-                            {res.type}
+                            {res.platform}
                         </span>
                     </div>
                 )}
+            </div>
 
+            <div>
                 {/* Content Container */}
                 <div style={{ padding: '16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>
+                        <span style={{ fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
                             {res.platform}
                         </span>
-                        <span style={{ fontSize: '12px', fontWeight: '700', color: res.isFree ? 'var(--accent)' : '#a5b4fc' }}>
-                            {res.isFree ? 'Free' : `₹${res.price}`}
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: (res.isFree || res.free || res.price === 0) ? 'var(--accent)' : '#a5b4fc' }}>
+                            {(res.isFree || res.free || res.price === 0) ? 'Free' : `₹${res.price}`}
                         </span>
                     </div>
 

@@ -128,6 +128,18 @@ export default function Workspace({ activeModuleId, onBackToRoadmap, onUpdatePro
         }
     };
 
+    const handleDurationClick = () => {
+        if (module && module.recommendedResources) {
+            const videoRes = module.recommendedResources.find(r => r.type === 'Video' || r.provider?.toLowerCase() === 'youtube');
+            if (videoRes && videoRes.url && videoRes.url !== "https://www.youtube.com" && videoRes.url !== "https://youtube.com") {
+                window.open(videoRes.url, '_blank');
+                return;
+            }
+        }
+        const searchQuery = `${module ? module.topic : ""} tutorial`;
+        window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`, '_blank');
+    };
+
     if (loading) {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: '16px' }}>
@@ -168,7 +180,29 @@ export default function Workspace({ activeModuleId, onBackToRoadmap, onUpdatePro
             {/* Title / Description */}
             <div className="card-premium" style={{ background: 'linear-gradient(135deg, rgba(22, 33, 54, 0.8), rgba(99, 102, 241, 0.03))' }}>
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                    <span className="badge-item" style={{ backgroundColor: 'rgba(99,102,241,0.2)', border: 'none' }}>
+                    <span 
+                        className="badge-item" 
+                        onClick={handleDurationClick}
+                        title="Click to watch YouTube tutorial video"
+                        style={{ 
+                            backgroundColor: 'rgba(99,102,241,0.2)', 
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            userSelect: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(99,102,241,0.35)';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(99,102,241,0.2)';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                    >
                         ⏱️ {module.estimatedDuration}
                     </span>
                     <span className="badge-item" style={{ backgroundColor: isModuleCompleted ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)', color: isModuleCompleted ? '#6ee7b7' : '#fbd38d', border: 'none' }}>

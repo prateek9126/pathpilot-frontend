@@ -26,6 +26,115 @@ export default function CareerOverview({ profile, onUpdateProfileState, onNaviga
     // Skill Search Explorer state
     const [skillSearch, setSkillSearch] = useState("Python");
     const [skillResult, setSkillResult] = useState(null);
+    const [switchingGoal, setSwitchingGoal] = useState("");
+
+    const handleSwitchPath = async (careerName) => {
+        let targetGoal = careerName;
+        if (careerName === "Cybersecurity") {
+            targetGoal = "Cybersecurity SOC Analyst";
+        } else if (careerName === "Full-Stack Development") {
+            targetGoal = "Java Backend Developer";
+        } else if (careerName === "AI/ML Engineering") {
+            targetGoal = "AI/ML Engineer";
+        }
+        
+        setSwitchingGoal(careerName);
+        try {
+            const updatedProfilePayload = {
+                ...profile,
+                targetGoal: targetGoal
+            };
+            const updatedProfile = await api.updateProfile(updatedProfilePayload);
+            const updatedRoadmap = await api.getRoadmap();
+            onUpdateProfileState(updatedProfile, updatedRoadmap);
+            onNavigateToTab("path");
+        } catch (err) {
+            console.error("Failed to switch career path", err);
+        } finally {
+            setSwitchingGoal("");
+        }
+    };
+
+    // Dynamic Skill Match Calculations
+    const calculateMatch = (careerName, requiredSkills, baseTransitionTime) => {
+        const userSkills = profile.skills || [];
+        let matchedCount = 0;
+        let totalLevelSum = 0;
+        
+        requiredSkills.forEach(reqSkill => {
+            const userSkill = userSkills.find(s => 
+                s.name.toLowerCase().includes(reqSkill.toLowerCase()) || 
+                reqSkill.toLowerCase().includes(s.name.toLowerCase())
+            );
+            if (userSkill && userSkill.level > 0) {
+                matchedCount++;
+                totalLevelSum += userSkill.level;
+            }
+        });
+        
+        const overlapFraction = requiredSkills.length > 0 ? matchedCount / requiredSkills.length : 0;
+        const avgMatchedLevel = matchedCount > 0 ? totalLevelSum / matchedCount : 0;
+        
+        let matchScore = 25;
+        if (matchedCount > 0) {
+            matchScore = 40 + Math.round(overlapFraction * 40) + Math.round((avgMatchedLevel / 100) * 20);
+        }
+        
+        matchScore = Math.min(98, Math.max(15, matchScore));
+        
+        let transition = baseTransitionTime;
+        if (matchScore >= 80) {
+            transition = "1–2 months";
+        } else if (matchScore >= 60) {
+            transition = "3–4 months";
+        } else if (matchScore >= 40) {
+            transition = "5–6 months";
+        } else {
+            transition = "7–9 months";
+        }
+        
+        let explanation = "";
+        if (matchedCount > 0) {
+            const matchedSkillNames = requiredSkills
+                .filter(reqSkill => userSkills.some(s => s.name.toLowerCase().includes(reqSkill.toLowerCase()) || reqSkill.toLowerCase().includes(s.name.toLowerCase())))
+                .slice(0, 3);
+            explanation = `Strong match with your programming and problem-solving skills in ${matchedSkillNames.join(" and ")}.`;
+        } else {
+            explanation = `Good base analytics alignment, requires learning core competencies in this field.`;
+        }
+        
+        return {
+            name: careerName,
+            matchScore,
+            transition,
+            explanation
+        };
+    };
+
+    const targetGoalLower = (profile.targetGoal || "").toLowerCase();
+    
+    const isCurrentGoal = (careerName) => {
+        const goal = targetGoalLower;
+        const n = careerName.toLowerCase();
+        if (goal.includes("cyber") && n.includes("cyber")) return true;
+        if ((goal.includes("java") || goal.includes("backend") || goal.includes("software") || goal.includes("web")) && n.includes("full-stack")) return true;
+        if (goal.includes("data") && n.includes("data")) return true;
+        if ((goal.includes("ml") || goal.includes("machine") || goal.includes("ai")) && n.includes("ai/ml")) return true;
+        return false;
+    };
+
+    const careersList = [
+        { name: "Frontend Development", skills: ["HTML", "CSS", "JavaScript", "React"], baseTime: "5–6 months" },
+        { name: "Full-Stack Development", skills: ["Java", "Spring Boot", "SQL", "React", "JavaScript"], baseTime: "5–6 months" },
+        { name: "Data Science", skills: ["Python", "SQL", "Statistics", "Machine Learning"], baseTime: "5–6 months" },
+        { name: "AI/ML Engineering", skills: ["Python", "Machine Learning", "Deep Learning", "TensorFlow/PyTorch"], baseTime: "5–6 months" },
+        { name: "Cloud/DevOps", skills: ["Linux", "Networking", "Docker", "AWS/Azure"], baseTime: "5–6 months" },
+        { name: "Cybersecurity", skills: ["Linux", "Networking", "SIEM", "Python"], baseTime: "5–6 months" }
+    ];
+
+    const alternatives = careersList
+        .filter(c => !isCurrentGoal(c.name))
+        .map(c => calculateMatch(c.name, c.skills, c.baseTime));
 
     // Market demand data (interactive chart values)
     const marketDemand = [
@@ -221,25 +330,7 @@ export default function CareerOverview({ profile, onUpdateProfileState, onNaviga
                         </div>
                     )}
 
-                    {/* OTHER CAREER OPTIONS MATCH GRID */}
-                    <div>
-                        <h2 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            🔀 Other Career Options For You
-                        </h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                            {overviewData.alternatives && overviewData.alternatives.slice(0, 4).map((alt) => (
-                                <div key={alt.name} className="card-premium" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div>
-                                        <h4 style={{ fontSize: '14px', fontWeight: '800', margin: '0' }}>{alt.name}</h4>
-                                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Transition: {alt.learningTime}</span>
-                                    </div>
-                                    <span style={{ fontSize: '16px', fontWeight: '900', color: alt.matchScore >= 80 ? '#10b981' : (alt.matchScore >= 60 ? 'var(--primary)' : '#f59e0b') }}>
-                                        {alt.matchScore}% Fit
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    {/* Alternatives grid removed - moved to the right column as part of redesign */}
 
                     {/* DYNAMIC TRANSITION ROADMAP PLANNER */}
                     <div className="card-premium" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -509,87 +600,60 @@ export default function CareerOverview({ profile, onUpdateProfileState, onNaviga
 
                 </div>
 
-                {/* RIGHT COLUMN: AI CAREER ADVISOR CHAT */}
+                {/* RIGHT COLUMN: OTHER CAREER OPTIONS */}
                 <div>
-                    <div className="card-premium" style={{ display: 'flex', flexDirection: 'column', height: '620px', padding: '0', position: 'sticky', top: '24px' }}>
-                        
-                        <div style={{ padding: '16px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--bg-secondary)' }}>
-                            <Bot size={18} color="var(--primary)" />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'sticky', top: '24px' }}>
+                        <div className="card-premium" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <Bot size={20} color="var(--primary)" />
                             <div>
-                                <strong style={{ display: 'block', fontSize: '13px', color: 'var(--text-primary)' }}>🤖 AI Career Advisor</strong>
-                                <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>Personalized Career Consultant</span>
+                                <h3 style={{ fontSize: '15px', fontWeight: '800', fontFamily: 'Outfit', margin: 0 }}>🔀 Other Career Options For You</h3>
+                                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Based on your target goal and current skills compatibility.</span>
                             </div>
                         </div>
-
-                        {/* Chat Messages Logs */}
-                        <div style={{ flex: '1', overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            {chatMessages.map((msg, idx) => (
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {alternatives.map((alt) => (
                                 <div 
-                                    key={idx}
+                                    key={alt.name} 
+                                    className="card-premium" 
+                                    onClick={() => handleSwitchPath(alt.name)}
                                     style={{ 
-                                        alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                                        backgroundColor: msg.sender === 'user' ? 'var(--primary)' : 'var(--bg-secondary)',
-                                        border: msg.sender === 'user' ? 'none' : '1px solid var(--border-color)',
-                                        padding: '12px 14px',
-                                        borderRadius: msg.sender === 'user' ? '12px 12px 0 12px' : '12px 12px 12px 0',
-                                        maxWidth: '85%',
-                                        fontSize: '12px',
-                                        lineHeight: '1.5',
-                                        whiteSpace: 'pre-wrap',
-                                        color: msg.sender === 'user' ? '#FFFFFF' : 'var(--text-primary)'
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        gap: '8px', 
+                                        padding: '16px', 
+                                        backgroundColor: '#FFFFFF',
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = 'none';
                                     }}
                                 >
-                                    {msg.text}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <strong style={{ fontSize: '14px', color: '#0F172A' }}>{alt.name}</strong>
+                                        <span style={{ fontSize: '14px', fontWeight: '900', color: 'var(--primary)' }}>
+                                            {switchingGoal === alt.name ? "Regenerating..." : `${alt.matchScore}% Match`}
+                                        </span>
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Transition: {alt.transition}</div>
+                                    
+                                    {/* Progress Bar */}
+                                    <div style={{ width: '100%', height: '6px', backgroundColor: '#F1F5F9', borderRadius: '3px', overflow: 'hidden', margin: '4px 0' }}>
+                                        <div style={{ width: `${alt.matchScore}%`, height: '100%', backgroundColor: '#2563EB', borderRadius: '3px' }}></div>
+                                    </div>
+                                    
+                                    <p style={{ fontSize: '11px', color: '#64748B', margin: '0', lineHeight: '1.4' }}>
+                                        {alt.explanation}
+                                    </p>
                                 </div>
                             ))}
-                            {chatLoading && (
-                                <div style={{ alignSelf: 'flex-start', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', padding: '12px 14px', borderRadius: '12px 12px 12px 0', display: 'flex', gap: '4px' }}>
-                                    <span style={{ width: '4px', height: '4px', backgroundColor: 'var(--text-secondary)', borderRadius: '50%', animation: 'bounce 1s infinite' }}></span>
-                                    <span style={{ width: '4px', height: '4px', backgroundColor: 'var(--text-secondary)', borderRadius: '50%', animation: 'bounce 1s infinite 0.2s' }}></span>
-                                    <span style={{ width: '4px', height: '4px', backgroundColor: 'var(--text-secondary)', borderRadius: '50%', animation: 'bounce 1s infinite 0.4s' }}></span>
-                                </div>
-                            )}
                         </div>
-
-                        {/* Suggestion buttons */}
-                        <div style={{ padding: '10px 16px', display: 'flex', gap: '6px', overflowX: 'auto', borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)' }}>
-                            <button 
-                                onClick={() => handleAdvisorChat("Should I continue my current path or explore Data Science?")}
-                                style={{ padding: '6px 10px', fontSize: '10px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: '#FFFFFF', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
-                            >
-                                🤔 Stay or Switch?
-                            </button>
-                            <button 
-                                onClick={() => handleAdvisorChat("Which career requires the least additional learning?")}
-                                style={{ padding: '6px 10px', fontSize: '10px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: '#FFFFFF', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
-                            >
-                                🔗 Easiest transition
-                            </button>
-                            <button 
-                                onClick={() => handleAdvisorChat("What should I learn to become an AI Engineer?")}
-                                style={{ padding: '6px 10px', fontSize: '10px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: '#FFFFFF', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
-                            >
-                                🤖 Become an AI Engineer
-                            </button>
-                        </div>
-
-                        {/* Form input */}
-                        <form 
-                            onSubmit={(e) => { e.preventDefault(); handleAdvisorChat(); }}
-                            style={{ display: 'flex', borderTop: '1px solid var(--border-color)', padding: '12px 16px', gap: '8px' }}
-                        >
-                            <input 
-                                type="text"
-                                value={chatQuery}
-                                onChange={(e) => setChatQuery(e.target.value)}
-                                placeholder="Ask a career transition question..."
-                                style={{ flex: '1', padding: '8px 12px', fontSize: '12px', backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
-                            />
-                            <button type="submit" className="btn-primary" style={{ padding: '8px 12px' }}>
-                                <Send size={14} />
-                            </button>
-                        </form>
-
                     </div>
                 </div>
 

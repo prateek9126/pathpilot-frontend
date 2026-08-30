@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, FormInput, Play, Terminal, Coffee, BarChart2 } from 'lucide-react';
+import { Sparkles, FormInput, Play, Shield, Code2, BarChart2, Brain, ArrowRight } from 'lucide-react';
 
 export default function Onboarding({ onOnboardSuccess, onLoadDemo }) {
     const [mode, setMode] = useState('nlp'); // 'nlp' or 'form'
@@ -75,36 +75,231 @@ export default function Onboarding({ onOnboardSuccess, onLoadDemo }) {
             </div>
 
             {/* Demo Section */}
-            <div className="card-premium" style={{ marginBottom: '32px', borderColor: 'var(--primary)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                    <Sparkles size={20} color="var(--primary)" />
-                    <h3 style={{ fontSize: '18px', fontWeight: '700' }}>Quick Try — Choose a Demo Profile</h3>
-                </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '20px' }}>
-                    Skip onboarding and immediately experience the personalized roadmap recalculations, skill gap analysis, and interactive AI mentoring.
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                    <button className="btn-secondary" onClick={() => onLoadDemo('soc')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '20px', textAlign: 'center', height: '100%' }}>
-                        <Terminal size={28} color="#3b82f6" />
-                        <div>
-                            <div style={{ fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>Demo 1: SOC Analyst</div>
-                            <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Gap: Networking<br/>Skills: Python, Linux</div>
+            <div style={{ marginBottom: '36px', marginTop: '16px' }}>
+                <div className="quick-try-grid">
+                    {/* Demo 1: Cybersecurity */}
+                    <div 
+                        onClick={() => onLoadDemo('soc')}
+                        style={{
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #E2E8F0',
+                            borderRadius: '16px',
+                            padding: '36px 28px',
+                            boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.25s ease',
+                            height: '100%',
+                            minHeight: '290px',
+                            justifyContent: 'space-between',
+                            gap: '20px'
+                        }}
+                        className="quick-try-card"
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-4px)';
+                            e.currentTarget.style.borderColor = 'var(--primary)';
+                            e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 99, 235, 0.12)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.borderColor = '#E2E8F0';
+                            e.currentTarget.style.boxShadow = '0 4px 20px rgba(15, 23, 42, 0.04)';
+                        }}
+                    >
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%' }}>
+                            <Shield size={36} color="#2563EB" />
+                            <div>
+                                <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Demo 1</div>
+                                <h4 style={{ fontWeight: '800', fontSize: '19px', color: '#0F172A', margin: '4px 0 0 0', fontFamily: "'Outfit', sans-serif" }}>Cybersecurity</h4>
+                            </div>
+                            
+                            <div style={{ width: '100%', borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px', textAlign: 'left' }}>
+                                <div>
+                                    <span style={{ fontWeight: '700', display: 'block', fontSize: '10px', textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.08em', marginBottom: '2px' }}>Skill Gap</span>
+                                    <span style={{ color: '#E11D48', fontWeight: '600' }}>Networking</span>
+                                </div>
+                                <div>
+                                    <span style={{ fontWeight: '700', display: 'block', fontSize: '10px', textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.08em', marginBottom: '2px' }}>Skills</span>
+                                    <span style={{ color: '#475569', fontWeight: '500' }}>Python, Linux</span>
+                                </div>
+                            </div>
                         </div>
-                    </button>
-                    <button className="btn-secondary" onClick={() => onLoadDemo('java')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '20px', textAlign: 'center', height: '100%' }}>
-                        <Coffee size={28} color="#f59e0b" />
-                        <div>
-                            <div style={{ fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>Demo 2: Java Backend</div>
-                            <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Gap: SQL, Spring Boot<br/>Skills: Java, OOP</div>
+                        
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: '700', color: '#2563EB', marginTop: '8px' }}>
+                            Try Demo <ArrowRight size={16} />
                         </div>
-                    </button>
-                    <button className="btn-secondary" onClick={() => onLoadDemo('ds')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '20px', textAlign: 'center', height: '100%' }}>
-                        <BarChart2 size={28} color="#10b981" />
-                        <div>
-                            <div style={{ fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>Demo 3: Data Scientist</div>
-                            <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Gap: Machine Learning<br/>Skills: Python, Stats</div>
+                    </div>
+
+                    {/* Demo 2: Web Development */}
+                    <div 
+                        onClick={() => onLoadDemo('java')}
+                        style={{
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #E2E8F0',
+                            borderRadius: '16px',
+                            padding: '36px 28px',
+                            boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.25s ease',
+                            height: '100%',
+                            minHeight: '290px',
+                            justifyContent: 'space-between',
+                            gap: '20px'
+                        }}
+                        className="quick-try-card"
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-4px)';
+                            e.currentTarget.style.borderColor = 'var(--primary)';
+                            e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 99, 235, 0.12)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.borderColor = '#E2E8F0';
+                            e.currentTarget.style.boxShadow = '0 4px 20px rgba(15, 23, 42, 0.04)';
+                        }}
+                    >
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%' }}>
+                            <Code2 size={36} color="#2563EB" />
+                            <div>
+                                <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Demo 2</div>
+                                <h4 style={{ fontWeight: '800', fontSize: '19px', color: '#0F172A', margin: '4px 0 0 0', fontFamily: "'Outfit', sans-serif" }}>Web Development</h4>
+                            </div>
+                            
+                            <div style={{ width: '100%', borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px', textAlign: 'left' }}>
+                                <div>
+                                    <span style={{ fontWeight: '700', display: 'block', fontSize: '10px', textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.08em', marginBottom: '2px' }}>Skill Gap</span>
+                                    <span style={{ color: '#E11D48', fontWeight: '600' }}>Backend / APIs</span>
+                                </div>
+                                <div>
+                                    <span style={{ fontWeight: '700', display: 'block', fontSize: '10px', textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.08em', marginBottom: '2px' }}>Skills</span>
+                                    <span style={{ color: '#475569', fontWeight: '500' }}>HTML, CSS, JavaScript</span>
+                                </div>
+                            </div>
                         </div>
-                    </button>
+                        
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: '700', color: '#2563EB', marginTop: '8px' }}>
+                            Try Demo <ArrowRight size={16} />
+                        </div>
+                    </div>
+
+                    {/* Demo 3: Data Science */}
+                    <div 
+                        onClick={() => onLoadDemo('ds')}
+                        style={{
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #E2E8F0',
+                            borderRadius: '16px',
+                            padding: '36px 28px',
+                            boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.25s ease',
+                            height: '100%',
+                            minHeight: '290px',
+                            justifyContent: 'space-between',
+                            gap: '20px'
+                        }}
+                        className="quick-try-card"
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-4px)';
+                            e.currentTarget.style.borderColor = 'var(--primary)';
+                            e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 99, 235, 0.12)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.borderColor = '#E2E8F0';
+                            e.currentTarget.style.boxShadow = '0 4px 20px rgba(15, 23, 42, 0.04)';
+                        }}
+                    >
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%' }}>
+                            <BarChart2 size={36} color="#2563EB" />
+                            <div>
+                                <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Demo 3</div>
+                                <h4 style={{ fontWeight: '800', fontSize: '19px', color: '#0F172A', margin: '4px 0 0 0', fontFamily: "'Outfit', sans-serif" }}>Data Science</h4>
+                            </div>
+                            
+                            <div style={{ width: '100%', borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px', textAlign: 'left' }}>
+                                <div>
+                                    <span style={{ fontWeight: '700', display: 'block', fontSize: '10px', textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.08em', marginBottom: '2px' }}>Skill Gap</span>
+                                    <span style={{ color: '#E11D48', fontWeight: '600' }}>Machine Learning</span>
+                                </div>
+                                <div>
+                                    <span style={{ fontWeight: '700', display: 'block', fontSize: '10px', textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.08em', marginBottom: '2px' }}>Skills</span>
+                                    <span style={{ color: '#475569', fontWeight: '500' }}>Python, Statistics</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: '700', color: '#2563EB', marginTop: '8px' }}>
+                            Try Demo <ArrowRight size={16} />
+                        </div>
+                    </div>
+
+                    {/* Demo 4: AI/ML */}
+                    <div 
+                        onClick={() => onLoadDemo('aiml')}
+                        style={{
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #E2E8F0',
+                            borderRadius: '16px',
+                            padding: '36px 28px',
+                            boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.25s ease',
+                            height: '100%',
+                            minHeight: '290px',
+                            justifyContent: 'space-between',
+                            gap: '20px'
+                        }}
+                        className="quick-try-card"
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-4px)';
+                            e.currentTarget.style.borderColor = 'var(--primary)';
+                            e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 99, 235, 0.12)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.borderColor = '#E2E8F0';
+                            e.currentTarget.style.boxShadow = '0 4px 20px rgba(15, 23, 42, 0.04)';
+                        }}
+                    >
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%' }}>
+                            <Brain size={36} color="#2563EB" />
+                            <div>
+                                <div style={{ fontSize: '12px', fontWeight: '700', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Demo 4</div>
+                                <h4 style={{ fontWeight: '800', fontSize: '19px', color: '#0F172A', margin: '4px 0 0 0', fontFamily: "'Outfit', sans-serif" }}>AI/ML</h4>
+                            </div>
+                            
+                            <div style={{ width: '100%', borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px', textAlign: 'left' }}>
+                                <div>
+                                    <span style={{ fontWeight: '700', display: 'block', fontSize: '10px', textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.08em', marginBottom: '2px' }}>Skill Gap</span>
+                                    <span style={{ color: '#E11D48', fontWeight: '600' }}>Deep Learning</span>
+                                </div>
+                                <div>
+                                    <span style={{ fontWeight: '700', display: 'block', fontSize: '10px', textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.08em', marginBottom: '2px' }}>Skills</span>
+                                    <span style={{ color: '#475569', fontWeight: '500' }}>Python, ML</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: '700', color: '#2563EB', marginTop: '8px' }}>
+                            Try Demo <ArrowRight size={16} />
+                        </div>
+                    </div>
                 </div>
             </div>
 
