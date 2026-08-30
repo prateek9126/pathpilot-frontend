@@ -92,6 +92,25 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
     const certsReadiness = progressPercent > 70 ? 90 : 20;
     const overallReadiness = Math.round((skillsReadiness + projectsReadiness + certsReadiness) / 3);
 
+    const handleDurationClick = (mod, e) => {
+        if (e) {
+            e.stopPropagation();
+        }
+        if (mod && mod.recommendedResources) {
+            const videoRes = mod.recommendedResources.find(r => 
+                (r.type && r.type.includes('Video')) || 
+                (r.platform && r.platform.toLowerCase().includes('youtube')) || 
+                (r.url && (r.url.includes('youtube.com') || r.url.includes('youtu.be')))
+            );
+            if (videoRes && videoRes.url && videoRes.url !== "https://www.youtube.com" && videoRes.url !== "https://youtube.com") {
+                window.open(videoRes.url, '_blank');
+                return;
+            }
+        }
+        const searchQuery = `${mod ? mod.topic : ""} tutorial`;
+        window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`, '_blank');
+    };
+
     // AI Advisor recommendation handler
     const handleAskAdvisor = async (e) => {
         e.preventDefault();
@@ -162,7 +181,15 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                 <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{activeModule.description}</p>
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '13px', color: 'var(--text-secondary)', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                                <div>⏱️ <strong>Est. Duration:</strong> {activeModule.estimatedDuration}</div>
+                                <div 
+                                    onClick={() => handleDurationClick(activeModule)}
+                                    title="Click to search tutorials on YouTube"
+                                    style={{ cursor: 'pointer', textDecoration: 'underline dotted' }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                >
+                                    ⏱️ <strong>Est. Duration:</strong> {activeModule.estimatedDuration}
+                                </div>
                                 <div>⚡ <strong>Difficulty:</strong> {activeModule.difficulty}</div>
                             </div>
                             <button 
@@ -298,7 +325,21 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                                     </div>
                                                     
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{mod.estimatedDuration}</span>
+                                                        <span 
+                                                            onClick={(e) => handleDurationClick(mod, e)}
+                                                            title="Click to search tutorials on YouTube"
+                                                            style={{ 
+                                                                fontSize: '11px', 
+                                                                color: 'var(--text-secondary)',
+                                                                cursor: 'pointer',
+                                                                textDecoration: 'underline dotted',
+                                                                padding: '2px 4px'
+                                                            }}
+                                                            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                                                            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                                        >
+                                                            {mod.estimatedDuration}
+                                                        </span>
                                                         <span className={`badge-custom ${statusBadge}`} style={{ fontSize: '9px', padding: '2px 8px' }}>
                                                             {statusText}
                                                         </span>
@@ -340,7 +381,20 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                     remainingList.map((r, idx) => (
                                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', fontSize: '12px' }}>
                                             <span style={{ color: 'var(--text-secondary)' }}>{r.topic}</span>
-                                            <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>{r.estimatedDuration}</span>
+                                            <span 
+                                                 onClick={(e) => handleDurationClick(r, e)}
+                                                 title="Click to search tutorials on YouTube"
+                                                 style={{ 
+                                                     fontSize: '10px', 
+                                                     color: 'var(--text-secondary)',
+                                                     cursor: 'pointer',
+                                                     textDecoration: 'underline dotted'
+                                                 }}
+                                                 onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                                                 onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                             >
+                                                 {r.estimatedDuration}
+                                             </span>
                                         </div>
                                     ))
                                 ) : (
