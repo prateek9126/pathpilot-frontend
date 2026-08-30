@@ -218,7 +218,7 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                     onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
                                     onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                                 >
-                                    ⏱️ <strong>Est. Duration:</strong> {activeModule.estimatedDuration}
+                                    ⏱️ <strong>Est. Duration:</strong> Learn
                                 </div>
                                 <div>⚡ <strong>Difficulty:</strong> {activeModule.difficulty}</div>
                             </div>
@@ -368,7 +368,7 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                                             onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
                                                             onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                                                         >
-                                                            {mod.estimatedDuration}
+                                                            Learn
                                                         </span>
                                                         <span className={`badge-custom ${statusBadge}`} style={{ fontSize: '9px', padding: '2px 8px' }}>
                                                             {statusText}
@@ -412,19 +412,19 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', fontSize: '12px' }}>
                                             <span style={{ color: 'var(--text-secondary)' }}>{r.topic}</span>
                                             <span 
-                                                 onClick={(e) => handleDurationClick(r, e)}
-                                                 title="Click to search tutorials on YouTube"
-                                                 style={{ 
-                                                     fontSize: '10px', 
-                                                     color: 'var(--text-secondary)',
-                                                     cursor: 'pointer',
-                                                     textDecoration: 'underline dotted'
-                                                 }}
-                                                 onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
-                                                 onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-                                             >
-                                                 {r.estimatedDuration}
-                                             </span>
+                                                onClick={(e) => handleDurationClick(r, e)}
+                                                title="Click to search tutorials on YouTube"
+                                                style={{ 
+                                                    fontSize: '10px', 
+                                                    color: 'var(--text-secondary)',
+                                                    cursor: 'pointer',
+                                                    textDecoration: 'underline dotted'
+                                                }}
+                                                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                                                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                            >
+                                                Learn
+                                            </span>
                                         </div>
                                     ))
                                 ) : (
