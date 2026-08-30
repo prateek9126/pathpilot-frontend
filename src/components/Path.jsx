@@ -92,10 +92,7 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
     const certsReadiness = progressPercent > 70 ? 90 : 20;
     const overallReadiness = Math.round((skillsReadiness + projectsReadiness + certsReadiness) / 3);
 
-    const handleDurationClick = (mod, e) => {
-        if (e) {
-            e.stopPropagation();
-        }
+    const getDurationClickUrl = (mod) => {
         if (mod && mod.recommendedResources) {
             const videoRes = mod.recommendedResources.find(r => 
                 (r.type && r.type.includes('Video')) || 
@@ -103,42 +100,48 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                 (r.url && (r.url.includes('youtube.com') || r.url.includes('youtu.be')))
             );
             if (videoRes && videoRes.url && videoRes.url !== "https://www.youtube.com" && videoRes.url !== "https://youtube.com") {
-                window.open(videoRes.url, '_blank');
-                return;
+                return videoRes.url;
             }
         }
         
-        // Match specific high-quality direct YouTube video URLs for topics
         const topic = (mod ? mod.topic : "").toLowerCase();
         let targetUrl = "";
         
         if (topic.includes("sql") || topic.includes("database")) {
-            targetUrl = "https://youtu.be/HXV3zeQKqGY"; // SQL Tutorial for Beginners
+            targetUrl = "https://www.youtube.com/watch?v=HXV3zeQKqGY"; // SQL Tutorial for Beginners
         } else if (topic.includes("networking") || topic.includes("tcp")) {
-            targetUrl = "https://youtu.be/VwfrQy3kGw8"; // Neso Academy Networking Course
+            targetUrl = "https://www.youtube.com/watch?v=VwfrQy3kGw8"; // Neso Academy Networking Course
         } else if (topic.includes("java") && !topic.includes("javascript")) {
-            targetUrl = "https://youtu.be/A74TOX803X0"; // FreeCodeCamp Java Course
+            targetUrl = "https://www.youtube.com/watch?v=A74TOX803X0"; // FreeCodeCamp Java Course
         } else if (topic.includes("oop") || topic.includes("object oriented")) {
-            targetUrl = "https://youtu.be/SiBw7skDz94"; // Kunal Kushwaha OOP
+            targetUrl = "https://www.youtube.com/watch?v=SiBw7skDz94"; // Kunal Kushwaha OOP
         } else if (topic.includes("spring boot") || topic.includes("hibernate") || topic.includes("jpa")) {
-            targetUrl = "https://youtu.be/35EQXmHKZYs"; // Spring Boot Course
+            targetUrl = "https://www.youtube.com/watch?v=35EQXmHKZYs"; // Spring Boot Course
         } else if (topic.includes("security") || topic.includes("siem") || topic.includes("incident") || topic.includes("soc")) {
-            targetUrl = "https://youtu.be/O1fJ9mR9r00"; // Cybersecurity Course
+            targetUrl = "https://www.youtube.com/watch?v=O1fJ9mR9r00"; // Cybersecurity Course
         } else if (topic.includes("linux")) {
-            targetUrl = "https://youtu.be/sWbUDq4S6Yw"; // Linux Course
+            targetUrl = "https://www.youtube.com/watch?v=sWbUDq4S6Yw"; // Linux Course
         } else if (topic.includes("react")) {
-            targetUrl = "https://youtu.be/Ke90Tje7VS0"; // React Course
+            targetUrl = "https://www.youtube.com/watch?v=Ke90Tje7VS0"; // React Course
         } else if (topic.includes("html") || topic.includes("css") || topic.includes("javascript") || topic.includes("web dev") || topic.includes("frontend")) {
-            targetUrl = "https://youtu.be/mU6anWqOD4c"; // Web Dev Course
+            targetUrl = "https://www.youtube.com/watch?v=mU6anWqOD4c"; // Web Dev Course
         } else if (topic.includes("python")) {
-            targetUrl = "https://youtu.be/_uQrJ0TkZlc"; // Python Course
+            targetUrl = "https://www.youtube.com/watch?v=_uQrJ0TkZlc"; // Python Course
         } else if (topic.includes("machine learning") || topic.includes("neural") || topic.includes("deep learning") || topic.includes("nlp") || topic.includes("ai")) {
-            targetUrl = "https://youtu.be/GwIo3gToViM"; // Machine Learning Course
+            targetUrl = "https://www.youtube.com/watch?v=GwIo3gToViM"; // Machine Learning Course
         } else {
             targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent((mod ? mod.topic : "") + " tutorial")}`;
         }
         
-        window.open(targetUrl, '_blank');
+        return targetUrl;
+    };
+
+    const handleDurationClick = (mod, e) => {
+        if (e) {
+            e.stopPropagation();
+        }
+        const url = getDurationClickUrl(mod);
+        window.open(url, '_blank');
     };
 
     // AI Advisor recommendation handler
@@ -211,15 +214,17 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                 <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{activeModule.description}</p>
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '13px', color: 'var(--text-secondary)', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                                <div 
-                                    onClick={() => handleDurationClick(activeModule)}
-                                    title="Click to search tutorials on YouTube"
-                                    style={{ cursor: 'pointer', textDecoration: 'underline dotted' }}
+                                <a 
+                                    href={getDurationClickUrl(activeModule)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Click to watch tutorial on YouTube"
+                                    style={{ cursor: 'pointer', textDecoration: 'underline dotted', color: 'inherit' }}
                                     onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
                                     onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                                 >
                                     ⏱️ <strong>Est. Duration:</strong> Learn
-                                </div>
+                                </a>
                                 <div>⚡ <strong>Difficulty:</strong> {activeModule.difficulty}</div>
                             </div>
                             <button 
@@ -355,9 +360,12 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                                     </div>
                                                     
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span 
-                                                            onClick={(e) => handleDurationClick(mod, e)}
-                                                            title="Click to search tutorials on YouTube"
+                                                        <a 
+                                                            href={getDurationClickUrl(mod)}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            title="Click to watch tutorial on YouTube"
                                                             style={{ 
                                                                 fontSize: '11px', 
                                                                 color: 'var(--text-secondary)',
@@ -369,7 +377,7 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                                             onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                                                         >
                                                             Learn
-                                                        </span>
+                                                        </a>
                                                         <span className={`badge-custom ${statusBadge}`} style={{ fontSize: '9px', padding: '2px 8px' }}>
                                                             {statusText}
                                                         </span>
@@ -411,9 +419,12 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                     remainingList.map((r, idx) => (
                                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', fontSize: '12px' }}>
                                             <span style={{ color: 'var(--text-secondary)' }}>{r.topic}</span>
-                                            <span 
-                                                onClick={(e) => handleDurationClick(r, e)}
-                                                title="Click to search tutorials on YouTube"
+                                            <a 
+                                                href={getDurationClickUrl(r)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
+                                                title="Click to watch tutorial on YouTube"
                                                 style={{ 
                                                     fontSize: '10px', 
                                                     color: 'var(--text-secondary)',
@@ -424,7 +435,7 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                                                 onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                                             >
                                                 Learn
-                                            </span>
+                                            </a>
                                         </div>
                                     ))
                                 ) : (

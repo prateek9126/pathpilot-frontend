@@ -128,12 +128,11 @@ export default function Workspace({ activeModuleId, onBackToRoadmap, onUpdatePro
         }
     };
 
-    const handleDurationClick = () => {
+    const getDurationClickUrl = () => {
         if (module && module.recommendedResources) {
             const videoRes = module.recommendedResources.find(r => r.type === 'Video' || r.provider?.toLowerCase() === 'youtube');
             if (videoRes && videoRes.url && videoRes.url !== "https://www.youtube.com" && videoRes.url !== "https://youtube.com") {
-                window.open(videoRes.url, '_blank');
-                return;
+                return videoRes.url;
             }
         }
         
@@ -142,32 +141,37 @@ export default function Workspace({ activeModuleId, onBackToRoadmap, onUpdatePro
         let targetUrl = "";
         
         if (topic.includes("sql") || topic.includes("database")) {
-            targetUrl = "https://youtu.be/HXV3zeQKqGY"; // SQL Tutorial for Beginners
+            targetUrl = "https://www.youtube.com/watch?v=HXV3zeQKqGY"; // SQL Tutorial for Beginners
         } else if (topic.includes("networking") || topic.includes("tcp")) {
-            targetUrl = "https://youtu.be/VwfrQy3kGw8"; // Neso Academy Networking Course
+            targetUrl = "https://www.youtube.com/watch?v=VwfrQy3kGw8"; // Neso Academy Networking Course
         } else if (topic.includes("java") && !topic.includes("javascript")) {
-            targetUrl = "https://youtu.be/A74TOX803X0"; // FreeCodeCamp Java Course
+            targetUrl = "https://www.youtube.com/watch?v=A74TOX803X0"; // FreeCodeCamp Java Course
         } else if (topic.includes("oop") || topic.includes("object oriented")) {
-            targetUrl = "https://youtu.be/SiBw7skDz94"; // Kunal Kushwaha OOP
+            targetUrl = "https://www.youtube.com/watch?v=SiBw7skDz94"; // Kunal Kushwaha OOP
         } else if (topic.includes("spring boot") || topic.includes("hibernate") || topic.includes("jpa")) {
-            targetUrl = "https://youtu.be/35EQXmHKZYs"; // Spring Boot Course
+            targetUrl = "https://www.youtube.com/watch?v=35EQXmHKZYs"; // Spring Boot Course
         } else if (topic.includes("security") || topic.includes("siem") || topic.includes("incident") || topic.includes("soc")) {
-            targetUrl = "https://youtu.be/O1fJ9mR9r00"; // Cybersecurity Course
+            targetUrl = "https://www.youtube.com/watch?v=O1fJ9mR9r00"; // Cybersecurity Course
         } else if (topic.includes("linux")) {
-            targetUrl = "https://youtu.be/sWbUDq4S6Yw"; // Linux Course
+            targetUrl = "https://www.youtube.com/watch?v=sWbUDq4S6Yw"; // Linux Course
         } else if (topic.includes("react")) {
-            targetUrl = "https://youtu.be/Ke90Tje7VS0"; // React Course
+            targetUrl = "https://www.youtube.com/watch?v=Ke90Tje7VS0"; // React Course
         } else if (topic.includes("html") || topic.includes("css") || topic.includes("javascript") || topic.includes("web dev") || topic.includes("frontend")) {
-            targetUrl = "https://youtu.be/mU6anWqOD4c"; // Web Dev Course
+            targetUrl = "https://www.youtube.com/watch?v=mU6anWqOD4c"; // Web Dev Course
         } else if (topic.includes("python")) {
-            targetUrl = "https://youtu.be/_uQrJ0TkZlc"; // Python Course
+            targetUrl = "https://www.youtube.com/watch?v=_uQrJ0TkZlc"; // Python Course
         } else if (topic.includes("machine learning") || topic.includes("neural") || topic.includes("deep learning") || topic.includes("nlp") || topic.includes("ai")) {
-            targetUrl = "https://youtu.be/GwIo3gToViM"; // Machine Learning Course
+            targetUrl = "https://www.youtube.com/watch?v=GwIo3gToViM"; // Machine Learning Course
         } else {
             targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent((module ? module.topic : "") + " tutorial")}`;
         }
         
-        window.open(targetUrl, '_blank');
+        return targetUrl;
+    };
+
+    const handleDurationClick = () => {
+        const url = getDurationClickUrl();
+        window.open(url, '_blank');
     };
 
     if (loading) {
@@ -210,9 +214,11 @@ export default function Workspace({ activeModuleId, onBackToRoadmap, onUpdatePro
             {/* Title / Description */}
             <div className="card-premium" style={{ background: 'linear-gradient(135deg, rgba(22, 33, 54, 0.8), rgba(99, 102, 241, 0.03))' }}>
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                    <span 
+                    <a 
+                        href={getDurationClickUrl()}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="badge-item" 
-                        onClick={handleDurationClick}
                         title="Click to watch YouTube tutorial video"
                         style={{ 
                             backgroundColor: 'rgba(99,102,241,0.2)', 
@@ -222,7 +228,9 @@ export default function Workspace({ activeModuleId, onBackToRoadmap, onUpdatePro
                             userSelect: 'none',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '4px'
+                            gap: '4px',
+                            textDecoration: 'none',
+                            color: 'inherit'
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor = 'rgba(99,102,241,0.35)';
@@ -234,7 +242,7 @@ export default function Workspace({ activeModuleId, onBackToRoadmap, onUpdatePro
                         }}
                     >
                         ⏱️ {module.estimatedDuration}
-                    </span>
+                    </a>
                     <span className="badge-item" style={{ backgroundColor: isModuleCompleted ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)', color: isModuleCompleted ? '#6ee7b7' : '#fbd38d', border: 'none' }}>
                         {isModuleCompleted ? '✓ Completed' : 'In Progress'}
                     </span>
