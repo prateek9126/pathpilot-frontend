@@ -107,8 +107,38 @@ export default function Path({ profile, roadmap, onNavigateToModule, onNavigateT
                 return;
             }
         }
-        const searchQuery = `${mod ? mod.topic : ""} tutorial`;
-        window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`, '_blank');
+        
+        // Match specific high-quality direct YouTube video URLs for topics
+        const topic = (mod ? mod.topic : "").toLowerCase();
+        let targetUrl = "";
+        
+        if (topic.includes("sql") || topic.includes("database")) {
+            targetUrl = "https://www.youtube.com/watch?v=HXV3zeQKqGY"; // SQL Tutorial for Beginners
+        } else if (topic.includes("networking") || topic.includes("tcp")) {
+            targetUrl = "https://www.youtube.com/watch?v=qiQDmRz9Q2Y"; // NetworkChuck CCNA
+        } else if (topic.includes("java") && !topic.includes("javascript")) {
+            targetUrl = "https://www.youtube.com/watch?v=A74TOX803X0"; // FreeCodeCamp Java Course
+        } else if (topic.includes("oop") || topic.includes("object oriented")) {
+            targetUrl = "https://www.youtube.com/watch?v=SiBw7skDz94"; // Kunal Kushwaha OOP
+        } else if (topic.includes("spring boot") || topic.includes("hibernate") || topic.includes("jpa")) {
+            targetUrl = "https://www.youtube.com/watch?v=35EQXmHKZYs"; // Spring Boot Course
+        } else if (topic.includes("security") || topic.includes("siem") || topic.includes("incident") || topic.includes("soc")) {
+            targetUrl = "https://www.youtube.com/watch?v=O1fJ9mR9r00"; // Cybersecurity Course
+        } else if (topic.includes("linux")) {
+            targetUrl = "https://www.youtube.com/watch?v=sWbUDq4S6Yw"; // Linux Course
+        } else if (topic.includes("react")) {
+            targetUrl = "https://www.youtube.com/watch?v=Ke90Tje7VS0"; // React Course
+        } else if (topic.includes("html") || topic.includes("css") || topic.includes("javascript") || topic.includes("web dev") || topic.includes("frontend")) {
+            targetUrl = "https://www.youtube.com/watch?v=mU6anWqOD4c"; // Web Dev Course
+        } else if (topic.includes("python")) {
+            targetUrl = "https://www.youtube.com/watch?v=_uQrJ0TkZlc"; // Python Course
+        } else if (topic.includes("machine learning") || topic.includes("neural") || topic.includes("deep learning") || topic.includes("nlp") || topic.includes("ai")) {
+            targetUrl = "https://www.youtube.com/watch?v=GwIo3gToViM"; // Machine Learning Course
+        } else {
+            targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent((mod ? mod.topic : "") + " tutorial")}`;
+        }
+        
+        window.open(targetUrl, '_blank');
     };
 
     // AI Advisor recommendation handler
